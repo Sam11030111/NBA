@@ -1,0 +1,28 @@
+[class^="game"] {
+    display: inline-flex;
+    border: 5px solid grey;
+    border-radius: 10px;
+    padding: 20px;
+    gap: 50px;
+    margin-top: 30px;
+    margin-left: 30px;
+}
+
+.img-name {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.scores {
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #F3EEEA;
+    border: 5px solid #FFC436;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+img {
+    background-color: white;
+}
