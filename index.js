@@ -24,22 +24,32 @@ async function fetchNBAGameLive() {
             const homeScores  = game.scores.home.linescore;
             const visitorImage = game.teams.visitors.logo;
             const homeImage = game.teams.home.logo;
+            const current = game.periods.current;
+            const endOfPeriod = game.periods.endOfPeriod;
+            const clock = game.status.clock;
           
-            return { gameId, visitorId, homeId, visitorScores, homeScores, visitorImage, homeImage };
+            return { gameId, visitorId, homeId, visitorScores, homeScores, visitorImage, homeImage, clock, current, endOfPeriod };
         });
 
-        let index = 0; 
-        function printNextElement() {
-            if (index < gameLive.length) {
-                console.log(gameLive[index].gameId);
-                fetchGameStatics(gameLive[index].gameId, gameLive, index);
-                index++;
-            } else {
-                console.log("沒有其他比賽了");
-                clearInterval(printInterval); 
-            }
-        }
-        const printInterval = setInterval(printNextElement, 3000);
+        // let index = 0; 
+        // function printNextElement() {
+        //     if (index < gameLive.length) {
+        //         console.log(gameLive[index].gameId);
+        //         fetchGameStatics(gameLive[index].gameId, gameLive, index);
+        //         index++;
+        //     } else {
+        //         console.log("沒有其他比賽了");
+        //         clearInterval(printInterval); 
+        //     }
+        // }
+        // const printInterval = setInterval(printNextElement, 3000);
+
+        // Clear all elements
+        $("#gamelive").empty();
+        for (let index = 0; index < gameLive.length; index++) {
+            console.log(gameLive[index].gameId);
+            fetchGameStatics(gameLive[index].gameId, gameLive, index);
+        };
         
     } catch (error) {
 	    console.error(error);
@@ -84,13 +94,15 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
         gameLiveData.forEach((liveData) => {
             if (liveData.gameId === parseInt(allGameStatics.gameId)) {
                 // Home
-                const homeDivElement = $(`<div class="game${index}">`);
+                const homeDivElement = $(`<div id="${index}" class="game${index}">`);
                 homeDivElement.html(
                     `<div class="statics">
                     <div class="img-name">
                         <img src="${liveData.homeImage}" height="100"/>
                         <h3>${allGameStatics.teamNames[0]}(主場)</h3>
                     </div>
+                    <h2>目前進行到第 ${liveData.current} 節</h2>
+                    <h2>時間剩下： ${liveData.clock}</h2>
                     <div class="scores">            
                         <p>Q1<br>${liveData.homeScores[0]}</p>
                         <p>Q2<br>${liveData.homeScores[1]}</p>
@@ -105,7 +117,7 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
                     <p>防守籃板：${allGameStatics.statistics[0].defReb}
                     <p>失誤：${allGameStatics.statistics[0].turnovers}`
                 );
-                $('h1').after(homeDivElement);
+                $('#gamelive').append(homeDivElement);
         
                 // Visitor
                 const visitorDivElement = $('<div class="statics">');
@@ -114,6 +126,8 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
                         <img src="${liveData.visitorImage}" height="100"/>
                         <h3>${allGameStatics.teamNames[1]}(客場)</h3>
                     </div>
+                    <h2>目前進行到第 ${liveData.current} 節</h2>
+                    <h2>時間剩下： ${liveData.clock}</h2>
                     <div class="scores">            
                         <p>Q1<br>${liveData.visitorScores[0]}</p>
                         <p>Q2<br>${liveData.visitorScores[1]}</p>
@@ -129,6 +143,12 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
                     <p>失誤：${allGameStatics.statistics[1].turnovers}`
                 );
                 $(`.game${index}`).append(visitorDivElement);
+
+                if ((liveData.current === 1 || liveData.current === 3) && liveData.endOfPeriod === true) {
+                    var element = document.getElementById(`${index}`);
+                    element.classList.add("screenshot");
+                    screenshot(index);
+                }
             } 
           })
 
@@ -137,6 +157,19 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
     }
 }
 
+function screenshot(index){
+    html2canvas(document.getElementById(`${index}`)).then(function(canvas) {
+        var element = document.getElementById(`${index}`);
+        if (element.classList.contains("screenshot")) {
+            var a = document.createElement('a');
+            a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+            a.download = 'image.jpg';
+            a.click();
+        }
+    });
+}
+
+//setInterval(fetchNBAGameLive, 10000);
 //fetchNBAGameLive();
 
 
@@ -150,8 +183,11 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
 //     const homeScores  = game.scores.home.linescore;
 //     const visitorImage = game.teams.visitors.logo;
 //     const homeImage = game.teams.home.logo;
+//     const current = game.periods.current;
+//     const endOfPeriod = game.periods.endOfPeriod;
+//     const clock = game.status.clock;
   
-//     return { gameId, visitorId, homeId, visitorScores, homeScores, visitorImage, homeImage };
+//     return { gameId, visitorId, homeId, visitorScores, homeScores, visitorImage, homeImage, clock, current, endOfPeriod};
 // });
 
 // // All games statics
@@ -181,13 +217,15 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
 //   allGameStatics.forEach((staticData) => {
 //     if (liveData.gameId === parseInt(staticData.gameId)) {
 //         // Home
-//         const homeDivElement = $(`<div class="game${num}">`);
+//         const homeDivElement = $(`<div id="${num}" class="game${num}">`);
 //         homeDivElement.html(
 //             `<div class="statics">
 //             <div class="img-name">
 //                 <img src="${liveData.homeImage}" height="100"/>
 //                 <h3>${staticData.teamNames[0]}(主場)</h3>
 //             </div>
+//             <h2>目前進行到第 ${liveData.current} 節</h2>
+//             <h2>時間剩下： ${liveData.clock}</h2>
 //             <div class="scores">            
 //                 <p>Q1<br>${liveData.homeScores[0]}</p>
 //                 <p>Q2<br>${liveData.homeScores[1]}</p>
@@ -202,7 +240,7 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
 //             <p>防守籃板：${staticData.statistics[0].defReb}
 //             <p>失誤：${staticData.statistics[0].turnovers}`
 //         );
-//         $('h1').after(homeDivElement);
+//         $('#gamelive').append(homeDivElement);
 
 //         // Visitor
 //         const visitorDivElement = $('<div class="statics">');
@@ -211,6 +249,8 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
 //                 <img src="${liveData.visitorImage}" height="100"/>
 //                 <h3>${staticData.teamNames[1]}(客場)</h3>
 //             </div>
+//             <h2>目前進行到第 ${liveData.current} 節</h2>
+//             <h2>時間剩下： ${liveData.clock}</h2>
 //             <div class="scores">            
 //                 <p>Q1<br>${liveData.visitorScores[0]}</p>
 //                 <p>Q2<br>${liveData.visitorScores[1]}</p>
@@ -226,8 +266,26 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
 //             <p>失誤：${staticData.statistics[1].turnovers}`
 //         );
 //         $(`.game${num}`).append(visitorDivElement);
+
+//         if ((liveData.current === 1 || liveData.current === 3) && liveData.endOfPeriod === true) {
+//             var element = document.getElementById(`${num}`);
+//             element.classList.add("screenshot");
+//             //screenshot(num);
+//         }
+
 //         num++;
 //     } 
 //   })
 // });
 
+// function screenshot(num){
+//     html2canvas(document.getElementById(`${num}`)).then(function(canvas) {
+//         var element = document.getElementById(`${num}`);
+//         if (element.classList.contains("screenshot")) {
+//             var a = document.createElement('a');
+//             a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+//             a.download = 'image.jpg';
+//             a.click();
+//         }
+//     });
+// }

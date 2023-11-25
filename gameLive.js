@@ -23,9 +23,9 @@ export const gameLiveDataPractice = {
           "long": "In Play"
         },
         "periods": {
-          "current": 4,
+          "current": 1,
           "total": 4,
-          "endOfPeriod": false
+          "endOfPeriod": true
         },
         "arena": {
           "name": "Rocket Mortgage FieldHouse",
@@ -103,9 +103,9 @@ export const gameLiveDataPractice = {
           "long": "In Play"
         },
         "periods": {
-          "current": 2,
+          "current": 3,
           "total": 4,
-          "endOfPeriod": false
+          "endOfPeriod": true
         },
         "arena": {
           "name": "American Airlines Center",

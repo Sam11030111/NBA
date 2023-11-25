@@ -26,3 +26,13 @@
 img {
     background-color: white;
 }
+
+.statics > h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: red;
+}
+
+.screenshot {
+    border: 5px solid red;
+}
