@@ -147,7 +147,7 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
                 if ((liveData.current === 1 || liveData.current === 3) && liveData.endOfPeriod === true) {
                     var element = document.getElementById(`${index}`);
                     element.classList.add("screenshot");
-                    screenshot(index);
+                    screenshot(index, allGameStatics.teamNames[0], allGameStatics.teamNames[1]);
                 }
             } 
           })
@@ -157,13 +157,13 @@ async function fetchGameStatics(gameId, gameLiveData, index) {
     }
 }
 
-function screenshot(index){
+function screenshot(index, home, visitor){
     html2canvas(document.getElementById(`${index}`)).then(function(canvas) {
         var element = document.getElementById(`${index}`);
         if (element.classList.contains("screenshot")) {
             var a = document.createElement('a');
             a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
-            a.download = 'image.jpg';
+            a.download = `${home} V.S. ${visitor}.jpg`;
             a.click();
         }
     });
