@@ -270,7 +270,7 @@ function screenshot(index, home, visitor){
 //         if ((liveData.current === 1 || liveData.current === 3) && liveData.endOfPeriod === true) {
 //             var element = document.getElementById(`${num}`);
 //             element.classList.add("screenshot");
-//             //screenshot(num);
+//             screenshot(num, staticData.teamNames[0], staticData.teamNames[1]);
 //         }
 
 //         num++;
